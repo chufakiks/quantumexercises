@@ -10,15 +10,13 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 # Qiskit Runtime imports
 from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit_ibm_runtime import EstimatorV2 as Estimator
+from qiskit_aer import AerSimulator
  
 # Plotting routines
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 
-service = QiskitRuntimeService()
-backend = service.least_busy(
-    operational=True, simulator=False, min_num_qubits=127
-)
+backend = AerSimulator()
 
 theta = Parameter("$\\theta$")
  
