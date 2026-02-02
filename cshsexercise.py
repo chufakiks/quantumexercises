@@ -53,3 +53,50 @@ chsh_isa_circuit.draw(output="mpl", idle_wires=False, style="iqp")
 isa_observable1 = observable1.apply_layout(layout=chsh_isa_circuit.layout)
 isa_observable2 = observable2.apply_layout(layout=chsh_isa_circuit.layout)
 
+# To run on a local simulator:
+# Use the StatevectorEstimator from qiskit.primitives instead.
+ 
+estimator = Estimator(mode=backend)
+ 
+pub = (
+    chsh_isa_circuit,  # ISA circuit
+    [[isa_observable1], [isa_observable2]],  # ISA Observables
+    individual_phases,  # Parameter values
+)
+ 
+job_result = estimator.run(pubs=[pub]).result()
+
+chsh1_est = job_result[0].data.evs[0]
+chsh2_est = job_result[0].data.evs[1]
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# results from hardware
+ax.plot(phases / np.pi, chsh1_est, "o-", label="CHSH1", zorder=3)
+ax.plot(phases / np.pi, chsh2_est, "o-", label="CHSH2", zorder=3)
+
+# classical bound +-2
+ax.axhline(y=2, color="0.9", linestyle="--")
+ax.axhline(y=-2, color="0.9", linestyle="--")
+
+# quantum bound, +-2√2
+ax.axhline(y=np.sqrt(2) * 2, color="0.9", linestyle="-.")
+ax.axhline(y=-np.sqrt(2) * 2, color="0.9", linestyle="-.")
+ax.fill_between(phases / np.pi, 2, 2 * np.sqrt(2), color="0.6", alpha=0.7)
+ax.fill_between(phases / np.pi, -2, -2 * np.sqrt(2), color="0.6", alpha=0.7)
+
+# set x tick labels to the unit of pi
+ax.xaxis.set_major_formatter(tck.FormatStrFormatter("%g $\\pi$"))
+ax.xaxis.set_major_locator(tck.MultipleLocator(base=0.5))
+
+plt.xlabel("Theta")
+plt.ylabel("CHSH witness")
+plt.legend()
+
+# Save figure
+plt.savefig("chsh_plot.png", dpi=300, bbox_inches="tight")
+
+# Optional: still display it
+# plt.show()
+
+
