@@ -15,6 +15,11 @@ from qiskit_ibm_runtime import EstimatorV2 as Estimator
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 
+service = QiskitRuntimeService()
+backend = service.least_busy(
+    operational=True, simulator=False, min_num_qubits=127
+)
+
 theta = Parameter("$\\theta$")
  
 chsh_circuit = QuantumCircuit(2)
@@ -38,3 +43,13 @@ observable1 = SparsePauliOp.from_list(
 observable2 = SparsePauliOp.from_list(
     [("ZZ", 1), ("ZX", 1), ("XZ", -1), ("XX", 1)]
 )
+
+target = backend.target
+pm = generate_preset_pass_manager(target=target, optimization_level=3)
+ 
+chsh_isa_circuit = pm.run(chsh_circuit)
+chsh_isa_circuit.draw(output="mpl", idle_wires=False, style="iqp")
+
+isa_observable1 = observable1.apply_layout(layout=chsh_isa_circuit.layout)
+isa_observable2 = observable2.apply_layout(layout=chsh_isa_circuit.layout)
+
