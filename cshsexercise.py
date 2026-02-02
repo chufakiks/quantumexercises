@@ -15,9 +15,10 @@ from qiskit_ibm_runtime import EstimatorV2 as Estimator
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 
-# To run on hardware, select the backend with the fewest number of jobs in the queue
-service = QiskitRuntimeService()
-backend = service.least_busy(
-    operational=True, simulator=False, min_num_qubits=127
-)
-backend.name
+theta = Parameter("$\\theta$")
+ 
+chsh_circuit = QuantumCircuit(2)
+chsh_circuit.h(0)
+chsh_circuit.cx(0, 1)
+chsh_circuit.ry(theta, 0)
+chsh_circuit.draw(output="mpl", idle_wires=False, style="iqp")
