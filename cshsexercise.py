@@ -50,7 +50,8 @@ isa_observable1 = observable1.apply_layout(layout=chsh_isa_circuit.layout)
 isa_observable2 = observable2.apply_layout(layout=chsh_isa_circuit.layout)
 
  
-job_result = backend.run(chsh_isa_circuit, shots = 1000)
+job = backend.run(chsh_isa_circuit, shots = 1000)
+job_result = job.result()
 
 chsh1_est = job_result[0].data.evs[0]
 chsh2_est = job_result[0].data.evs[1]
