@@ -1,22 +1,20 @@
 # General
 import numpy as np
+from mqt import ddsim
  
 # Qiskit imports
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
- 
-# Qiskit Runtime imports
-from qiskit_ibm_runtime import QiskitRuntimeService
-from qiskit_ibm_runtime import EstimatorV2 as Estimator
-from qiskit_aer import AerSimulator
+
  
 # Plotting routines
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tck
 
-backend = AerSimulator()
+provider = ddsim.DDSIMProvider()
+backend = provider.get_backend("qasm_simulator")
 
 theta = Parameter("$\\theta$")
  
@@ -51,18 +49,8 @@ chsh_isa_circuit.draw(output="mpl", idle_wires=False, style="iqp")
 isa_observable1 = observable1.apply_layout(layout=chsh_isa_circuit.layout)
 isa_observable2 = observable2.apply_layout(layout=chsh_isa_circuit.layout)
 
-# To run on a local simulator:
-# Use the StatevectorEstimator from qiskit.primitives instead.
  
-estimator = Estimator(mode=backend)
- 
-pub = (
-    chsh_isa_circuit,  # ISA circuit
-    [[isa_observable1], [isa_observable2]],  # ISA Observables
-    individual_phases,  # Parameter values
-)
- 
-job_result = estimator.run(pubs=[pub]).result()
+job_result = backend.run(chsh_isa_circuit, shots = 1000)
 
 chsh1_est = job_result[0].data.evs[0]
 chsh2_est = job_result[0].data.evs[1]
