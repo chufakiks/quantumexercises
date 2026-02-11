@@ -1,4 +1,6 @@
-?exp: INT | FLOAT | NAMED_CONSTANT
+?exp: INT 
+    | FLOAT 
+    | NAMED_CONSTANT
     | exp BINOP exp    
     | variable
     | UNOP exp    
@@ -9,8 +11,8 @@
 
 variable: ID | ID "[" exp "]"
 
-INT:     // Assignment 1.1
-FLOAT:   // Assignment 1.1
+INT:     ([0-9])| (0x[0-9A-Fa-f]+) | (0b[01]+)
+FLOAT:   [+-]?[0-9]+.[0-9]+[e[+-]?[0-9]+]?
 
 ID.-1:         /[a-zA-Z][a-zA-Z0-9_]*/
 
